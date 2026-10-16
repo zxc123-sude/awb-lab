@@ -1,12 +1,38 @@
-# AWB Lab
+# AI AWB Lab
 
-**经典自动白平衡算法 · 线性 RGB 评测 · 可复现结果**
+**学习式光源估计 · PyTorch 训练 · 经典 AWB 对照 · 可复现评测**
 
-面向相机 AWB / ISP 学习和算法实验的小型工具。实现经典光源估计方法，明确图像与真值的处理约定，并将视觉演示与真实数据集评测分开。
+面向相机 AWB / ISP 的 AI 项目：从线性 camera-RGB 学习估计光源，再生成白平衡增益。包括一个可从零训练的轻量 CNN、训练/验证/测试流程，以及四种经典方法作为对照。
 
-[项目演示页面](https://zxc123-sude.github.io/) · [评测协议](docs/EVALUATION.md)
+[项目页面](https://zxc123-sude.github.io/) · **[AI 训练与推理指南](docs/AI_AWB.md)** · [真实缩略图实验报告](reports/ffcc_pilot/README.md) · [经典评测协议](docs/EVALUATION.md)
 
-## 当前范围
+已完成 25,012 参数 CNN 的真实缩略图初步实验：固定 189/191/188 张训练/验证/测试，188 张测试图 mean recovery error 为 **4.09°**，Shades of Gray 对照为 **3.96°**。当前 AI 未全面优于传统方法；这是单次 fold 划分，尚未验证场景独立、完整 RAW 或跨相机泛化。报告提供全部逐图误差、配置及训练记录，36 项本地测试通过。
+
+## AI 模型
+
+```text
+线性 camera-RGB + 有效区域掩膜
+    → 3 个卷积块
+    → 局部正值 RGB 光源 + 置信度
+    → 有效区域加权汇聚 → 全局单位光源向量
+    → [eG/eR, 1, eG/eB] 白平衡增益
+```
+
+`TinyIlluminantNet` 是独立的小型训练基线，参考 FC4 的置信度加权汇聚思想，不声称复现 FC4 的架构或论文成绩。使用 `1 − cosine` 损失训练，按验证集角误差选择 `best.pt`；测试时在同一清单上比较 CNN 和四种经典算法。模型不会下载外部预训练权重。
+
+推荐 Python 3.12。已有 PyTorch/CUDA 的服务器环境可安装本项目后使用 `--device cuda`；本地可使用 CPU。完整安装方式见训练指南。
+
+```powershell
+python -m pip install -e ".[ai]"
+python -m awb_lab.learning train data/train.csv data/val.csv --output-dir outputs/model --device cuda
+python -m awb_lab.learning evaluate outputs/model/best.pt data/test.csv --output-dir outputs/test --device cuda
+```
+
+训练清单除基础列外，还需要显式的 `group_id` 和 `dataset_type`。相关场景、裁剪和多相机图像应使用同一组，训练/验证/测试检查组标签和路径交集；场景独立性取决于组标签是否真实反映场景，不能仅凭程序检查宣称。
+
+网页当前提供的是**经典算法对照演示**。AI 推理由训练产生的 checkpoint 驱动，通过命令行运行，浏览器演示不调用这个模型。
+
+## 经典算法对照
 
 | 方法 | 统计假设 | 典型局限 |
 | --- | --- | --- |
@@ -15,7 +41,7 @@
 | Shades of Gray | 使用 Minkowski 范数连接均值与最大值 | 参数和高亮像素会影响估计 |
 | Gray Edge | 场景通道导数统计接近中性 | 依赖纹理、尺度、滤波和有效区域 |
 
-这是经典方法的 Python 复现与评测初版。C++ 实现、性能优化和真实数据集实验属于后续工作。合成样例仅验证代码与处理流程，目前不声称真实数据集精度或性能提升。
+这些 Python 实现为 AI 实验提供对照。C++ 实现、ONNX 导出和性能优化属于后续工作。下面的经典合成样例仅验证代码与处理流程；真实实验应注明数据来源、处理方式和划分。
 
 ## 安装
 
