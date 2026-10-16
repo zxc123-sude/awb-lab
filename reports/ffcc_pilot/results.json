@@ -1,0 +1,394 @@
+{
+  "experiment": "Single-split real thumbnail pilot; not a full benchmark reproduction",
+  "date": "2026-10-16",
+  "model": {
+    "architecture": "tiny_illuminant_v1",
+    "parameter_count": 25012,
+    "pretrained": false
+  },
+  "configuration": {
+    "seed": 42,
+    "epochs": 20,
+    "batch_size": 16,
+    "input_size": 32,
+    "learning_rate": 0.001,
+    "optimizer": "Adam",
+    "loss": "one_minus_cosine",
+    "device": "cpu",
+    "torch_threads": 2,
+    "selection": "minimum_validation_mean_recovery_degrees"
+  },
+  "environment": {
+    "python": "3.12.14",
+    "os": "Windows",
+    "torch": "2.14.1+cpu",
+    "numpy": "2.5.4",
+    "scipy": "1.18.1",
+    "opencv": "5.0.0"
+  },
+  "data_provenance": {
+    "dataset": "Gehler-Shi / FFCC GehlerShiThumb real-data pilot",
+    "author_url": "https://github.com/google/ffcc",
+    "source_commit": "2fa9e1316954dbd3913630b7d597927941b4dd32",
+    "source_checkout_commit": "2fa9e1316954dbd3913630b7d597927941b4dd32",
+    "source_revision_verified": true,
+    "source_directory": "../ffcc-source/data/shi_gehler/preprocessed/GehlerShiThumb",
+    "source_files_sha256": "2b996ffb803f11918ec746330681d0037912e25ac82e7a9b2099b8a874bd2ab4",
+    "source_artifact": "data/shi_gehler/preprocessed/GehlerShiThumb",
+    "sample_count": 568,
+    "fold_counts": {
+      "1": 189,
+      "2": 191,
+      "3": 188
+    },
+    "split_protocol": {
+      "train": "official-fold-1",
+      "val": "official-fold-2",
+      "test": "official-fold-3"
+    },
+    "grouping_unit": "official_fold_no_scene_annotations",
+    "ground_truth": "Three positive RGB values from the author's corresponding .txt file, L2-normalized; illuminant, not gains.",
+    "input": {
+      "height": 32,
+      "width": 48,
+      "channels": 3,
+      "dtype": "uint8",
+      "color_space": "camera-linear RGB (no gamma, no camera CCM applied)",
+      "black_level": 0,
+      "white_level": 255,
+      "author_preprocessing": "Subtract camera black level (Canon5D 129 / Canon1D 0), exclude color checker and saturation, mask-aware bilinear downsampling, per-image maximum normalization, and 8-bit quantization.",
+      "additional_mask": "valid = (max(R,G,B)>0) & (max(R,G,B)<255); author-zeroed pixels and any channel at 255 are excluded. No black level is subtracted again."
+    },
+    "mask_diagnostics": {
+      "excluded_all_zero_pixels": 18726,
+      "excluded_any_255_pixels": 660,
+      "images_without_all_zero_pixels": [
+        "000087",
+        "000088",
+        "000089",
+        "000091",
+        "000092",
+        "000093",
+        "000095",
+        "000096",
+        "000099",
+        "000101",
+        "000105",
+        "000107",
+        "000114",
+        "000116",
+        "000118",
+        "000130",
+        "000131",
+        "000133",
+        "000140",
+        "000142",
+        "000151",
+        "000152",
+        "000158",
+        "000160",
+        "000161",
+        "000168",
+        "000169",
+        "000170",
+        "000176",
+        "000187",
+        "000189",
+        "000203",
+        "000206",
+        "000228",
+        "000267",
+        "000348",
+        "000349",
+        "000351",
+        "000361",
+        "000374",
+        "000378"
+      ],
+      "note": "Masks are reconstructed from already masked author thumbnails; no original chart coordinates are recovered or inferred."
+    },
+    "camera_counts": {
+      "Canon1D": 86,
+      "Canon5D": 482
+    },
+    "limitations": [
+      "This single train/validation/test pilot is not the paper's complete three-fold cross-validation reproduction.",
+      "Official fold membership is not a scene annotation. Scene independence is unknown; group_id identifies only an official fold, not a physical scene.",
+      "The mixed two-camera data does not establish generalization to unseen cameras.",
+      "The 32x48 thumbnails have author downsampling, masking and 8-bit quantization; results do not establish full-resolution RAW or ISP deployment quality.",
+      "The reconstructed mask trusts the pinned author's preprocessing and cannot independently verify every original color-chart boundary."
+    ],
+    "references": [
+      "https://github.com/google/ffcc/blob/2fa9e1316954dbd3913630b7d597927941b4dd32/scripts/GehlerShiImportData.m",
+      "https://github.com/google/ffcc/blob/2fa9e1316954dbd3913630b7d597927941b4dd32/internal/ReadImage.m",
+      "https://github.com/google/ffcc/blob/2fa9e1316954dbd3913630b7d597927941b4dd32/projects/GehlerShiThumb/GehlerShiThumbConstants.m",
+      "https://www.cs.sfu.ca/~colour/data/shi_gehler/"
+    ],
+    "attribution": "FFCC code: Apache-2.0. Cite Barron and Tsai, Fast Fourier Color Constancy (CVPR 2017), and the original Gehler / Shi-Funt dataset sources. Original dataset rights are not replaced by the code license."
+  },
+  "training": {
+    "best_epoch": 18,
+    "best_val_mean_recovery_deg": 4.360154795945883,
+    "initial_val_mean_recovery_deg": 16.527677443976174,
+    "initial_val_cosine_loss": 0.04231292153684257,
+    "history": [
+      {
+        "epoch": 1,
+        "train_cosine_loss": 0.026668816361398923,
+        "val_cosine_loss": 0.018407966814818183,
+        "val_mean_recovery_deg": 9.722840389916438
+      },
+      {
+        "epoch": 2,
+        "train_cosine_loss": 0.016645113282181597,
+        "val_cosine_loss": 0.015661502032691895,
+        "val_mean_recovery_deg": 8.763769302814797
+      },
+      {
+        "epoch": 3,
+        "train_cosine_loss": 0.015535439458237123,
+        "val_cosine_loss": 0.015345801194612893,
+        "val_mean_recovery_deg": 8.644143197842464
+      },
+      {
+        "epoch": 4,
+        "train_cosine_loss": 0.015283070524375905,
+        "val_cosine_loss": 0.015157857490459661,
+        "val_mean_recovery_deg": 8.436419699885137
+      },
+      {
+        "epoch": 5,
+        "train_cosine_loss": 0.014831637579297263,
+        "val_cosine_loss": 0.014562060451866445,
+        "val_mean_recovery_deg": 8.252192875917663
+      },
+      {
+        "epoch": 6,
+        "train_cosine_loss": 0.013512595591169817,
+        "val_cosine_loss": 0.01305482241554254,
+        "val_mean_recovery_deg": 8.35204051824234
+      },
+      {
+        "epoch": 7,
+        "train_cosine_loss": 0.010269578467443507,
+        "val_cosine_loss": 0.008826407452762438,
+        "val_mean_recovery_deg": 6.852425146533312
+      },
+      {
+        "epoch": 8,
+        "train_cosine_loss": 0.006694648326152847,
+        "val_cosine_loss": 0.0071463578804859314,
+        "val_mean_recovery_deg": 5.945539530025944
+      },
+      {
+        "epoch": 9,
+        "train_cosine_loss": 0.007249559344792807,
+        "val_cosine_loss": 0.0062186883309007625,
+        "val_mean_recovery_deg": 4.982896192605378
+      },
+      {
+        "epoch": 10,
+        "train_cosine_loss": 0.005217356023393453,
+        "val_cosine_loss": 0.005371720366745563,
+        "val_mean_recovery_deg": 4.862691738949931
+      },
+      {
+        "epoch": 11,
+        "train_cosine_loss": 0.0050095682470965635,
+        "val_cosine_loss": 0.005298986813999439,
+        "val_mean_recovery_deg": 4.956571731208645
+      },
+      {
+        "epoch": 12,
+        "train_cosine_loss": 0.004711908330184915,
+        "val_cosine_loss": 0.005129592910077404,
+        "val_mean_recovery_deg": 4.593799395387599
+      },
+      {
+        "epoch": 13,
+        "train_cosine_loss": 0.00447200784193618,
+        "val_cosine_loss": 0.0050521524091548635,
+        "val_mean_recovery_deg": 4.501557008028303
+      },
+      {
+        "epoch": 14,
+        "train_cosine_loss": 0.004653642747413229,
+        "val_cosine_loss": 0.004904636857221732,
+        "val_mean_recovery_deg": 4.707247126954953
+      },
+      {
+        "epoch": 15,
+        "train_cosine_loss": 0.004503351674420099,
+        "val_cosine_loss": 0.005126827345254065,
+        "val_mean_recovery_deg": 4.805744779355016
+      },
+      {
+        "epoch": 16,
+        "train_cosine_loss": 0.004528719909666549,
+        "val_cosine_loss": 0.00474662398334339,
+        "val_mean_recovery_deg": 4.535830109932423
+      },
+      {
+        "epoch": 17,
+        "train_cosine_loss": 0.004559760058308562,
+        "val_cosine_loss": 0.004775751018847939,
+        "val_mean_recovery_deg": 4.378790662554029
+      },
+      {
+        "epoch": 18,
+        "train_cosine_loss": 0.004200268042810931,
+        "val_cosine_loss": 0.004555281873363319,
+        "val_mean_recovery_deg": 4.360154795945883
+      },
+      {
+        "epoch": 19,
+        "train_cosine_loss": 0.003761998560062792,
+        "val_cosine_loss": 0.004542164775147956,
+        "val_mean_recovery_deg": 4.449966952681775
+      },
+      {
+        "epoch": 20,
+        "train_cosine_loss": 0.0037759403555245,
+        "val_cosine_loss": 0.00474969816213737,
+        "val_mean_recovery_deg": 4.578008681958467
+      }
+    ],
+    "dataset_types": [
+      "real"
+    ],
+    "synthetic": false,
+    "train_grouping_units": [
+      "official_fold_no_scene_annotations"
+    ],
+    "val_grouping_units": [
+      "official_fold_no_scene_annotations"
+    ],
+    "interpretation": "Validation-selected epoch; see evaluation below for the separate held-out fold."
+  },
+  "evaluation": {
+    "sample_count": 188,
+    "failed_count": 0,
+    "manifest_sha256": "79cd18b01143d103338c844724918a7f4a9090071c2ea85050561a2bab776911",
+    "checkpoint_sha256": "0e6794a850aa1ded45106e5e98432ff8ef5e09201649e4818ba135d2ad416ab7",
+    "checkpoint_best_epoch": 18,
+    "train_manifest_sha256": "bfd469c71c88e390f2c4d931e892a85389043cc8adbd071ac83f2d53c1c404a7",
+    "val_manifest_sha256": "89dbfb11b92e9cc75f997bf77b6a361530bc5c718a2a7a78dca5bcb2f181d498",
+    "heldout_groups_checked": true,
+    "grouping_units": {
+      "train": [
+        "official_fold_no_scene_annotations"
+      ],
+      "val": [
+        "official_fold_no_scene_annotations"
+      ],
+      "test": [
+        "official_fold_no_scene_annotations"
+      ]
+    },
+    "dataset_types": [
+      "real"
+    ],
+    "synthetic": false,
+    "interpretation": "Manifest group IDs and image paths are disjoint; scene independence depends on grouping semantics. Official fold IDs alone do not establish scene independence.",
+    "preprocessing": "linear_rgb_valid_weighted_area_resize_validmax_v1",
+    "cnn_input_size": 32,
+    "classical_parameters": {
+      "p": 6,
+      "sigma": 1,
+      "near_clip": 1.0
+    },
+    "timing_note": "Single-run diagnostics, no warmup. Decode excluded. CNN includes mask/weighted resize/exposure normalization/device transfer plus synchronized forward; classical methods use native resolution with their own mask validation. Different scales and work; not a fair speed benchmark.",
+    "methods": {
+      "tiny_cnn": {
+        "count": 188,
+        "recovery_error_deg": {
+          "mean": 4.091367740441415,
+          "median": 3.3441950316468105,
+          "worst_25_percent_mean": 8.067706801981041
+        },
+        "reproduction_error_deg": {
+          "mean": 5.121020923254171,
+          "median": 4.310979123174706,
+          "worst_25_percent_mean": 10.237189426732426
+        },
+        "runtime_ms": {
+          "mean": 0.8177212768056593,
+          "median": 0.7616499988216674,
+          "worst_25_percent_mean": 1.014165957616221
+        }
+      },
+      "gray_world": {
+        "count": 188,
+        "recovery_error_deg": {
+          "mean": 4.827459575948823,
+          "median": 3.69757273652239,
+          "worst_25_percent_mean": 10.42425275831393
+        },
+        "reproduction_error_deg": {
+          "mean": 6.180828658543921,
+          "median": 4.933749916482563,
+          "worst_25_percent_mean": 13.359394453539943
+        },
+        "runtime_ms": {
+          "mean": 0.2571329788282883,
+          "median": 0.24560000019846484,
+          "worst_25_percent_mean": 0.2974297874854838
+        }
+      },
+      "white_patch": {
+        "count": 188,
+        "recovery_error_deg": {
+          "mean": 4.014789672593026,
+          "median": 2.2830294196596954,
+          "worst_25_percent_mean": 10.190348264520482
+        },
+        "reproduction_error_deg": {
+          "mean": 5.022756688240131,
+          "median": 3.0882724675463327,
+          "worst_25_percent_mean": 12.62722032729338
+        },
+        "runtime_ms": {
+          "mean": 0.17638563829368262,
+          "median": 0.17019999904732686,
+          "worst_25_percent_mean": 0.2000638297102612
+        }
+      },
+      "shades_of_gray": {
+        "count": 188,
+        "recovery_error_deg": {
+          "mean": 3.958983498809416,
+          "median": 2.3984463525328277,
+          "worst_25_percent_mean": 9.816267593111558
+        },
+        "reproduction_error_deg": {
+          "mean": 5.042148508320331,
+          "median": 2.946131347075376,
+          "worst_25_percent_mean": 12.514278092202424
+        },
+        "runtime_ms": {
+          "mean": 0.29915159565791055,
+          "median": 0.2870500029530376,
+          "worst_25_percent_mean": 0.34628510648543215
+        }
+      },
+      "gray_edge": {
+        "count": 188,
+        "recovery_error_deg": {
+          "mean": 4.511324767893001,
+          "median": 2.7529102510867607,
+          "worst_25_percent_mean": 11.097709484727662
+        },
+        "reproduction_error_deg": {
+          "mean": 5.5234997007491105,
+          "median": 3.410794444122377,
+          "worst_25_percent_mean": 13.411838033096124
+        },
+        "runtime_ms": {
+          "mean": 0.5596212765940048,
+          "median": 0.5375999990064884,
+          "worst_25_percent_mean": 0.6518212766751914
+        }
+      }
+    }
+  }
+}
