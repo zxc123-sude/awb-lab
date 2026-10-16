@@ -5,9 +5,12 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "awb-lab"
 version = "0.1.0"
-description = "Reproducible classical automatic white balance experiments"
+description = "Trainable AI automatic white balance with reproducible classical baselines"
 requires-python = ">=3.9"
 dependencies = ["numpy>=1.23", "scipy>=1.9", "opencv-python-headless>=4.8"]
+
+[project.optional-dependencies]
+ai = ["torch>=2.6"]
 
 [project.scripts]
 awb-lab = "awb_lab.cli:main"
